@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "chatplus-core"
+version = "0.1.0"
+description = "Offline foundation for an evidence-driven RCS Oasis client"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "grpcio>=1.70",
+    "protobuf>=6",
+    "websockets>=15",
+    "httpx>=0.28",
+]
+
+[project.scripts]
+chatplus-core = "chatplus_core.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=1",
+    "ruff>=0.11",
+    "mypy>=1.15",
+    "types-grpcio>=1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/chatplus_core"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = ["reference", "extracted_msix", "extracted_setup", "src/chatplus_core/_generated"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+exclude = ["src/chatplus_core/_generated/"]

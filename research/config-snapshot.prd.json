@@ -1,0 +1,19 @@
+{
+  "format_version": 1,
+  "environment": "prd",
+  "app_version": "1.5.4+6",
+  "provenance": "donor win PC, chatplus-core key_. AES-GCM decrypt, 2026-10-15",
+  "roots": {
+    "oasis_grpc_root": "np-rapi.rcsoasis.kr:1520",
+    "oasis_wss_root": "wss://wss.rcsoasis.kr",
+    "oasis_server_root": "https://np-rapi.rcsoasis.kr/oasis",
+    "oasis_small_file_server_root": "https://s-ft.rcsoasis.kr/oasis",
+    "oasis_large_file_server_root": "https://l-ft.rcsoasis.kr/oasis"
+  },
+  "limits": {
+    "oasis_max_group_xms_users": 30,
+    "oasis_max_small_file_size": 5242880,
+    "oasis_max_upload_file_size": 314572800
+  },
+  "note": "NON-SECRET roots only. Tokens kept out-of-repo. oasis_grpc_root is host:port (native gRPC likely); wss_root is WS (subscribe)."
+}

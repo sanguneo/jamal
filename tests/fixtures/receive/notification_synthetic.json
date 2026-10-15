@@ -1,0 +1,13 @@
+{
+  "note": "SYNTHETIC fake data for codec tests; real capture is out-of-repo",
+  "grpc_frame_b64": "AAAAAnwYgIC/1gYS8wR7Im1kbiI6Iis4MjAwMDAwMDAwMDAiLCJubXNFdmVudExpc3QiOnsiaW5kZXgiOjEsImxpbmsiOlt7ImhyZWYiOiJodHRwczovL2V4YW1wbGUuaW52YWxpZC9ubXMvc3ViIiwicmVsIjoiTm1zU3Vic2NyaXB0aW9uIn1dLCJyZXN0YXJ0VG9rZW4iOiJjM2x1ZEdobGRHbGoiLCJubXNFdmVudCI6W3siY2hhbmdlZE9iamVjdCI6eyJhdHRyaWJ1dGVzIjp7ImF0dHJpYnV0ZSI6W3sibmFtZSI6IkZyb20iLCJ2YWx1ZSI6InRlbDorODIwMDAwMDAwMDAxIn0seyJuYW1lIjoiVG8iLCJ2YWx1ZSI6WyJ0ZWw6KzgyMDAwMDAwMDAwMCJdfSx7Im5hbWUiOiJDb252ZXJzYXRpb24tSUQiLCJ2YWx1ZSI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMSJ9LHsibmFtZSI6IkRhdGUiLCJ2YWx1ZSI6IjIwMjYtMTAtMTVUMTg6MDA6MDAuMDAwKzA5OjAwIn0seyJuYW1lIjoiQ29udGVudC1UeXBlIiwidmFsdWUiOiJ0ZXh0L3BsYWluIn0seyJuYW1lIjoiTWVzc2FnZS1Db250ZXh0IiwidmFsdWUiOiJjaGF0LW1lc3NhZ2UifSx7Im5hbWUiOiJEaXJlY3Rpb24iLCJ2YWx1ZSI6IkluIn0seyJuYW1lIjoiVGV4dENvbnRlbnQiLCJ2YWx1ZSI6ImhlbGxvIGZyb20gc3ludGhldGljIGZpeHR1cmUifV19fX1dfX0=",
+  "expected": {
+    "push_epoch": 1792000000,
+    "from": "+820000000001",
+    "to": "+820000000000",
+    "conversation_id": "00000000-0000-4000-8000-000000000001",
+    "direction": "In",
+    "text": "hello from synthetic fixture",
+    "content_type": "text/plain"
+  }
+}

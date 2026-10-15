@@ -1,0 +1,52 @@
+# Build and extraction artifacts
+extracted_setup/
+extracted_msix/
+*.msix
+
+# Logs and temp
+*.log
+tmp/
+
+# Python environments, caches, and build products
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Private source material belongs outside the checkout.
+# Sanitized, reviewed fixtures under tests/fixtures remain eligible for Git.
+raw/
+raw_captures/
+captures/
+dumps/
+private/
+*.mitm
+*.pcap
+*.pcapng
+*.dmp
+*.dump
+*.secure
+*.hive
+*.db
+*.sqlite*
+*.har
+*.ndjson
+*.payload
+*.bin
+*credentials*.json
+*session*.json
+.env
+.env.*
+
+# _generated policy: approved *_pb2.py and source schemas are tracked at T08.
+# Only compiler/build intermediates are ignored, never the whole directory.
+src/chatplus_core/_generated/*.pyc
+src/chatplus_core/_generated/*.pyo
+src/chatplus_core/_generated/*.tmp
