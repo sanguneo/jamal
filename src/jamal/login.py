@@ -9,6 +9,8 @@ through `refresh.decode_envelope`.
 from __future__ import annotations
 
 import json
+import secrets
+import string
 import uuid
 from collections.abc import Mapping
 from typing import cast
@@ -27,7 +29,6 @@ _TOKEN_PATH = "/oasis/oapi/v1/token"
 
 WINDOWS_DEVICE_DEFAULTS = {
     "device_kind": "computer",
-    "device_name": "B460 MB B460MDS3H",
     "client_vendor": "SKTelecom",
     "mno": "SKT",
     "os_type": "win",
@@ -48,11 +49,17 @@ class AuthorizationPending(LoginError):
     pass
 
 
+def generated_device_name() -> str:
+    suffix = "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(7))
+    return f"DESKTOP-{suffix}"
+
+
 def new_device_info(client_ip: str, **overrides: str) -> dict[str, str]:
     info: dict[str, str] = {
         "client_id": str(uuid.uuid4()),
         "device_id": str(uuid.uuid4()).upper(),
         "client_ip": client_ip,
+        "device_name": generated_device_name(),
         **WINDOWS_DEVICE_DEFAULTS,
     }
     info.update(overrides)
@@ -76,7 +83,12 @@ def request_qrcode(
     *, environment: str, device_info: Mapping[str, str], client_secret: str, post: HttpPost
 ) -> dict[str, object]:
     status, resp = _post_json(
-        _QRCODE_PATH, {"device_info": dict(device_info)}, device_info, client_secret, environment, post
+        _QRCODE_PATH,
+        {"device_info": dict(device_info)},
+        device_info,
+        client_secret,
+        environment,
+        post,
     )
     if status != 200:
         raise LoginError(f"qrcode request failed: HTTP {status}")
@@ -95,14 +107,27 @@ def _is_pending(payload: object) -> bool:
     exception = error.get("serviceException")
     if not isinstance(exception, dict):
         return False
-    return exception.get("messageId") == "SVC2003" or exception.get("text") == "authorization_pending"
+    return (
+        exception.get("messageId") == "SVC2003"
+        or exception.get("text") == "authorization_pending"
+    )
 
 
 def poll_device(
-    *, environment: str, device_code: str, device_info: Mapping[str, str], client_secret: str, post: HttpPost
+    *,
+    environment: str,
+    device_code: str,
+    device_info: Mapping[str, str],
+    client_secret: str,
+    post: HttpPost,
 ) -> dict[str, object]:
     status, resp = _post_json(
-        _DEVICE_PATH, {"device_code": device_code}, device_info, client_secret, environment, post
+        _DEVICE_PATH,
+        {"device_code": device_code},
+        device_info,
+        client_secret,
+        environment,
+        post,
     )
     if status == 200:
         payload = decode_envelope(resp, environment)
@@ -116,10 +141,20 @@ def poll_device(
 
 
 def exchange_authorization_code(
-    *, environment: str, auth_code: str, device_info: Mapping[str, str], client_secret: str, post: HttpPost
+    *,
+    environment: str,
+    auth_code: str,
+    device_info: Mapping[str, str],
+    client_secret: str,
+    post: HttpPost,
 ) -> dict[str, object]:
     status, resp = _post_json(
-        _TOKEN_PATH, {"code": auth_code, "grant_type": "authorization_code"}, device_info, client_secret, environment, post
+        _TOKEN_PATH,
+        {"code": auth_code, "grant_type": "authorization_code"},
+        device_info,
+        client_secret,
+        environment,
+        post,
     )
     if status != 200:
         raise LoginError(f"token exchange failed: HTTP {status}")
