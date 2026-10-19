@@ -100,8 +100,8 @@ def test_valid_load(tmp_path: Path, export: dict[str, object], environment: str)
     [
         "format_version", "environment", "app_version", "exported_at", "account_hash",
         "tokens", "identity", "roots", "limits",
-        "tokens.access_token", "tokens.grpc_restart_token",
-        "identity.client_uuid", "identity.device_code",
+        "tokens.access_token",
+        "identity.client_uuid",
         "roots.grpc", "roots.wss", "roots.server", "roots.small_file", "roots.large_file",
         "limits.max_group_xms_users", "limits.max_small_file_size", "limits.max_upload_file_size",
     ],
@@ -178,6 +178,14 @@ def test_device_info_accepted(tmp_path: Path, export: dict[str, object]) -> None
     session = load_session(write_export(tmp_path, export))
     assert session.device_info is not None
     assert session.device_info["os_type"] == "win"
+
+
+def test_restart_token_and_device_code_optional(tmp_path: Path, export: dict[str, object]) -> None:
+    del cast(dict[str, object], export["tokens"])["grpc_restart_token"]
+    del cast(dict[str, object], export["identity"])["device_code"]
+    session = load_session(write_export(tmp_path, export))
+    assert session.grpc_restart_token == ""
+    assert session.device_code == ""
 
 
 def test_expired_session_loads_when_not_required(

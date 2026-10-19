@@ -185,14 +185,20 @@ def load_session(path: str | Path, *, require_valid: bool = True) -> Session:
         raise CredentialValidationError("account_hash must be hexadecimal")
     tokens = _object(data.get("tokens"), "tokens")
     access_token = _text(tokens.get("access_token"), "tokens.access_token")
-    restart_token = _text(tokens.get("grpc_restart_token"), "tokens.grpc_restart_token")
+    raw_restart = tokens.get("grpc_restart_token")
+    restart_token = (
+        _text(raw_restart, "tokens.grpc_restart_token") if raw_restart is not None else ""
+    )
     identity = _object(data.get("identity"), "identity")
     client_uuid = _text(identity.get("client_uuid"), "identity.client_uuid")
     try:
         _ = UUID(client_uuid)
     except ValueError:
         raise CredentialValidationError("identity.client_uuid must be a UUID") from None
-    device_code = _text(identity.get("device_code"), "identity.device_code")
+    raw_device_code = identity.get("device_code")
+    device_code = (
+        _text(raw_device_code, "identity.device_code") if raw_device_code is not None else ""
+    )
     raw_roots = _object(data.get("roots"), "roots")
     roots = {
         name: _root(raw_roots.get(name), scheme)
