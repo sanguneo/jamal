@@ -1,7 +1,7 @@
 # Session file, format version 1
 
 The explicit, short-lived session export consumed by
-`chatplus_core.credentials.load_session`. It is a local credential file, not an
+`jamal.credentials.load_session`. It is a local credential file, not an
 Oasis wire schema. `scripts/extract_session.py` produces it from a logged-in
 install. Never commit a populated session; keep it in an ACL-restricted file
 outside the checkout.

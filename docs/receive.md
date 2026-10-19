@@ -58,9 +58,9 @@ The real `x-mcs-*` values must come from the donor capture for a live run.
 ## CLI
 
 ```console
-uv run chatplus-core credentials inspect --credentials session.json
-uv run chatplus-core decode --input capture.json --type notification
-uv run chatplus-core subscribe --credentials session.json --config config.json \
+uv run jamal credentials inspect --credentials session.json
+uv run jamal decode --input capture.json --type notification
+uv run jamal subscribe --credentials session.json --config config.json \
     --device device.json [--epoch-micros N] [--limit N]
 ```
 
@@ -79,10 +79,10 @@ the receive MVP and return exit code 2.
 ## Library
 
 ```python
-from chatplus_core.client import SubscribeClient
-from chatplus_core.config import load_config_snapshot
-from chatplus_core.credentials import load_session
-from chatplus_core.subscribe import DeviceHeaders
+from jamal.client import SubscribeClient
+from jamal.config import load_config_snapshot
+from jamal.credentials import load_session
+from jamal.subscribe import DeviceHeaders
 
 session = load_session("session.json")
 config = load_config_snapshot("config.json")

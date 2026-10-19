@@ -5,9 +5,9 @@ import time
 from collections.abc import AsyncIterator, Mapping
 from dataclasses import dataclass
 
-from chatplus_core.codec import Notification, decode_notification
-from chatplus_core.credentials import Session
-from chatplus_core.transport.base import Transport
+from jamal.codec import Notification, decode_notification
+from jamal.credentials import Session
+from jamal.transport.base import Transport
 
 SUBSCRIBE_METHOD = "/oasis.client.api.SubscribeNotificationService/SubscribeNotification"
 

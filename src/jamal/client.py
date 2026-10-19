@@ -4,19 +4,19 @@ from collections.abc import AsyncIterator
 from types import TracebackType
 from typing import Self
 
-from chatplus_core.codec import Notification
-from chatplus_core.config import Config
-from chatplus_core.credentials import Session
-from chatplus_core.send import (
+from jamal.codec import Notification
+from jamal.config import Config
+from jamal.credentials import Session
+from jamal.send import (
     SEND_XMS_METHOD,
     build_xms_mms_request,
     build_xms_text_request,
     send_message,
 )
-from chatplus_core.subscribe import DeviceHeaders, subscribe
-from chatplus_core.transport.base import Transport
-from chatplus_core.transport.h2 import H2Transport
-from chatplus_core.upload import upload_mms_file
+from jamal.subscribe import DeviceHeaders, subscribe
+from jamal.transport.base import Transport
+from jamal.transport.h2 import H2Transport
+from jamal.upload import upload_mms_file
 
 
 class ClientError(Exception):

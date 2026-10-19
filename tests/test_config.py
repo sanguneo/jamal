@@ -9,7 +9,7 @@ from typing import Never, cast
 
 import pytest
 
-from chatplus_core.config import (
+from jamal.config import (
     ConfigFetchNotImplemented,
     ConfigValidationError,
     fetch_config_live,

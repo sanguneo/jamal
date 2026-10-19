@@ -11,18 +11,18 @@ import pytest
 import pytest_asyncio
 from grpc import aio
 
-from chatplus_core.cli import main
-from chatplus_core.client import SubscribeClient
-from chatplus_core.credentials import Session
-from chatplus_core.send import (
+from jamal.cli import main
+from jamal.client import SubscribeClient
+from jamal.credentials import Session
+from jamal.send import (
     SEND_RCS_METHOD,
     SEND_XMS_METHOD,
     build_xms_mms_request,
     build_xms_text_request,
     send_message,
 )
-from chatplus_core.subscribe import DeviceHeaders
-from chatplus_core.transport.h2 import H2Transport
+from jamal.subscribe import DeviceHeaders
+from jamal.transport.h2 import H2Transport
 
 SERVICE = "oasis.client.api.SendMessageService"
 FIXTURES = Path(__file__).parent / "fixtures" / "transport"
@@ -149,8 +149,8 @@ async def test_client_send_xms_text_dispatches(send_server: tuple[SendService, s
 async def test_client_send_xms_image_uploads_then_sends(
     send_server: tuple[SendService, str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from chatplus_core.send import build_xms_mms_request
-    from chatplus_core.upload import FileRef
+    from jamal.send import build_xms_mms_request
+    from jamal.upload import FileRef
 
     service, target = send_server
     ref = FileRef(
@@ -167,7 +167,7 @@ async def test_client_send_xms_image_uploads_then_sends(
         assert token == "file-token"
         return ref
 
-    monkeypatch.setattr("chatplus_core.client.upload_mms_file", fake_upload)
+    monkeypatch.setattr("jamal.client.upload_mms_file", fake_upload)
     client = SubscribeClient(_session(target), transport=_transport(target))
     try:
         response = await client.send_xms_image(

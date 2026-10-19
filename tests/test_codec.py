@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from chatplus_core.codec import (
+from jamal.codec import (
     CodecError,
     decode_notification,
     decode_stream,

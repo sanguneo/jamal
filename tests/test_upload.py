@@ -3,7 +3,7 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from chatplus_core.upload import FileRef, UploadError, upload_mms_file
+from jamal.upload import FileRef, UploadError, upload_mms_file
 
 PNG = b"\x89PNG\r\n\x1a\n" + b"\x00" * 24
 

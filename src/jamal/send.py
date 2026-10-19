@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Final
 
-from chatplus_core.credentials import Session
-from chatplus_core.subscribe import DeviceHeaders, build_metadata
-from chatplus_core.transport.base import Transport
+from jamal.credentials import Session
+from jamal.subscribe import DeviceHeaders, build_metadata
+from jamal.transport.base import Transport
 
 SEND_RCS_METHOD: Final = "/oasis.client.api.SendMessageService/SendRcs"
 SEND_XMS_METHOD: Final = "/oasis.client.api.SendMessageService/SendXms"

@@ -9,16 +9,16 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-from chatplus_core.client import ClientError, SubscribeClient
-from chatplus_core.codec import CodecError, Notification, decode_stream
-from chatplus_core.config import Config, ConfigValidationError, load_config_snapshot
-from chatplus_core.credentials import CredentialError, Session, load_session
-from chatplus_core.subscribe import DeviceHeaders
+from jamal.client import ClientError, SubscribeClient
+from jamal.codec import CodecError, Notification, decode_stream
+from jamal.config import Config, ConfigValidationError, load_config_snapshot
+from jamal.credentials import CredentialError, Session, load_session
+from jamal.subscribe import DeviceHeaders
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="chatplus-core", description="Low-level RCS Oasis receive client (no automation)."
+        prog="jamal", description="Low-level RCS Oasis receive client (no automation)."
     )
     commands = parser.add_subparsers(dest="command", required=True)
 

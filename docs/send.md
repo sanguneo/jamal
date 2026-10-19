@@ -63,7 +63,7 @@ of the gRPC session export; an image send needs that token supplied explicitly.
 ## Library
 
 ```python
-from chatplus_core.client import SubscribeClient
+from jamal.client import SubscribeClient
 
 async with SubscribeClient(session, config=config) as client:
     await client.send_xms_text(device, "+8210...", "hello", client_ip="203.0.113.9")
@@ -81,10 +81,10 @@ async with SubscribeClient(session, config=config) as client:
 ## CLI
 
 ```console
-uv run chatplus-core send xms --credentials session.json --device device.json \
+uv run jamal send xms --credentials session.json --device device.json \
     --to +8210... --text "hello" [--config config.json] [--client-ip IP] --confirm-send
 
-uv run chatplus-core send xms-image --credentials session.json --device device.json \
+uv run jamal send xms-image --credentials session.json --device device.json \
     --to +8210... --file pic.png --file-token-file ftok.txt \
     [--content-type image/png] [--caption ""] [--client-ip IP] --confirm-send
 ```

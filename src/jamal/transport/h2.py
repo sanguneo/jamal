@@ -15,7 +15,7 @@ from typing import Self, final, override
 import grpc
 from grpc import aio
 
-from chatplus_core.transport.base import Transport, TransportOverflowError
+from jamal.transport.base import Transport, TransportOverflowError
 
 REQUIRED_METADATA = frozenset(
     {

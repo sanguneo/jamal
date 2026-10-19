@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Export a chatplus-core session.json from a logged-in ChattingPlus install.
+"""Export a jamal session.json from a logged-in ChattingPlus install.
 
 Read-only. Run as the signed-in Windows user on the PC where ChattingPlus for
 Windows is installed and logged in. Reads the flutter_secure_storage values
 (AES-GCM sealed with a Windows Credential Manager key) and writes the explicit
-short-lived session export that chatplus-core's credential loader consumes.
+short-lived session export that jamal's credential loader consumes.
 The long-lived refresh token is deliberately never read or exported.
 
 Requires the `cryptography` package:  pip install cryptography
@@ -158,7 +158,7 @@ def build_session(values: dict[str, bytes], account: str) -> dict[str, object]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Export a chatplus-core session.json (read-only).")
+    parser = argparse.ArgumentParser(description="Export a jamal session.json (read-only).")
     parser.add_argument("--out", help="write the JSON here instead of stdout")
     args = parser.parse_args(argv)
     if sys.platform != "win32":

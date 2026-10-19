@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from chatplus_core.cli import main
+from jamal.cli import main
 
 FIXTURE = Path(__file__).parent / "fixtures" / "receive" / "notification_synthetic.json"
 CANARY = "CANARY-cli-secret-never-print"

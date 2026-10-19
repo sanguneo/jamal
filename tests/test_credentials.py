@@ -11,7 +11,7 @@ from typing import Never, cast
 
 import pytest
 
-from chatplus_core.credentials import CredentialError, CredentialValidationError, load_session
+from jamal.credentials import CredentialError, CredentialValidationError, load_session
 
 CANARY = "CANARY-session-secret-never-print"
 CLIENT_UUID = "12345678-1234-4234-8234-123456789abc"
@@ -30,7 +30,7 @@ def offline_clock(monkeypatch: pytest.MonkeyPatch) -> None:
 
     monkeypatch.setattr(socket, "getaddrinfo", forbidden)
     monkeypatch.setattr(socket, "create_connection", forbidden)
-    monkeypatch.setattr("chatplus_core.credentials.time.time", lambda: NOW)
+    monkeypatch.setattr("jamal.credentials.time.time", lambda: NOW)
 
 
 @pytest.fixture

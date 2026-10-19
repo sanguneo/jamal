@@ -13,8 +13,8 @@ import pytest
 import pytest_asyncio
 from grpc import aio
 
-from chatplus_core.transport.base import TransportOverflowError
-from chatplus_core.transport.h2 import H2Transport
+from jamal.transport.base import TransportOverflowError
+from jamal.transport.h2 import H2Transport
 
 SERVICE = "oasis.client.api.SubscribeNotificationService"
 METHOD = f"/{SERVICE}/SubscribeNotification"

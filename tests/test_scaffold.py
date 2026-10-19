@@ -18,7 +18,7 @@ def test_imports_do_not_connect(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(socket.socket, "connect_ex", forbidden)
     monkeypatch.setattr(socket, "create_connection", forbidden)
     monkeypatch.setattr(socket, "getaddrinfo", forbidden)
-    package = importlib.import_module("chatplus_core")
+    package = importlib.import_module("jamal")
     importlib.reload(package)
     for module in pkgutil.walk_packages(package.__path__, package.__name__ + "."):
         importlib.import_module(module.name)
@@ -45,7 +45,7 @@ def test_imports_do_not_connect(monkeypatch: pytest.MonkeyPatch) -> None:
 )
 def test_cli(args: list[str], returncode: int) -> None:
     result = subprocess.run(
-        [sys.executable, "-m", "chatplus_core", *args],
+        [sys.executable, "-m", "jamal", *args],
         capture_output=True,
         text=True,
         timeout=10,

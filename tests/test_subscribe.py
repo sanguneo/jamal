@@ -11,9 +11,9 @@ import pytest
 import pytest_asyncio
 from grpc import aio
 
-from chatplus_core.client import ClientError, SubscribeClient, _resolve_grpc_root
-from chatplus_core.credentials import Session
-from chatplus_core.subscribe import (
+from jamal.client import ClientError, SubscribeClient, _resolve_grpc_root
+from jamal.credentials import Session
+from jamal.subscribe import (
     DeviceHeaders,
     build_subscribe_request,
     subscription_key,
@@ -116,7 +116,7 @@ class NotifyService:
         yield _control_notification()
 
     def client(self, target: str) -> SubscribeClient:
-        from chatplus_core.transport.h2 import H2Transport
+        from jamal.transport.h2 import H2Transport
 
         transport = H2Transport(
             target,

@@ -47,6 +47,6 @@ private/
 
 # _generated policy: approved *_pb2.py and source schemas are tracked at T08.
 # Only compiler/build intermediates are ignored, never the whole directory.
-src/chatplus_core/_generated/*.pyc
-src/chatplus_core/_generated/*.pyo
-src/chatplus_core/_generated/*.tmp
+src/jamal/_generated/*.pyc
+src/jamal/_generated/*.pyo
+src/jamal/_generated/*.tmp

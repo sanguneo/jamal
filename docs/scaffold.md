@@ -1,13 +1,13 @@
 # T01 offline scaffold
 
 Requires Python 3.12 and uv. `.python-version` selects 3.12; `uv.lock` pins the
-resolved dependencies. The source package is `src/chatplus_core`.
+resolved dependencies. The source package is `src/jamal`.
 
 ```console
 uv sync --locked
-uv run chatplus-core --help
+uv run jamal --help
 uv run ruff check .
-uv run mypy src/chatplus_core
+uv run mypy src/jamal
 uv run pytest
 ```
 

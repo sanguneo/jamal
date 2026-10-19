@@ -28,7 +28,7 @@ There has been no traffic capture, binary disassembly, login, endpoint probe or 
 
 ## 2. Architecture and contracts
 
-All paths below are proposed additions. Package: `src/chatplus_core`; executable: `chatplus-core`. One process, one explicitly selected session, one subscription. Async library calls return data/errors; the CLI owns printing and signals.
+All paths below are proposed additions. Package: `src/jamal`; executable: `chatplus-core`. One process, one explicitly selected session, one subscription. Async library calls return data/errors; the CLI owns printing and signals.
 
 | Module / owner boundary | Contract |
 |---|---|
@@ -45,7 +45,7 @@ All paths below are proposed additions. Package: `src/chatplus_core`; executable
 
 ### Credential recovery: reuse the donor's proven implementation first
 
-**First implementer task:** study `C:\Users\USER\WebstormProjects\chatplus-core` on the donor PC, especially `chatplus_core/storage.py`, `hive.py`, `values.py` and their tests. Record that checkout's revision/local differences before porting. The public code inspected for this plan is commit `2e8bf59467147b29f9832ac7c7c8d24b73ac9847` [S1-S3]; isolate the new project's environment because both repositories use the `chatplus_core` import name. Reuse the storage primitives, not the existing API/UI-send/automation layers.
+**First implementer task:** study `C:\Users\USER\WebstormProjects\chatplus-core` on the donor PC, especially `jamal/storage.py`, `hive.py`, `values.py` and their tests. Record that checkout's revision/local differences before porting. The public code inspected for this plan is commit `2e8bf59467147b29f9832ac7c7c8d24b73ac9847` [S1-S3]; isolate the new project's environment because both repositories use the `jamal` import name. Reuse the storage primitives, not the existing API/UI-send/automation layers.
 
 The inspected Windows recipe is concrete [S1]: `storage_key()` reads the 16-byte generic credential `key_.`; `windows_profile()` selects the profile under `LocalCache/Local/SK Telecom Co., Ltd/ChattingPlus/edb`, decodes the `.sK2Nwk*.secure` filename's Base64 logical name, and finds `cipher_key_<profile>_<device>`. Its AES-GCM call uses a 12-byte nonce, **the next 16 bytes as the tag**, the remaining ciphertext, and no AAD. Decrypted cipher-key text has trailing NULs removed and is URL-safe-Base64 decoded to 32 bytes. That is a **Hive key**, not an auth token. `hive.py` supplies structural, padding and CRC checks for local frame decoding; its CRC is not cryptographic authentication [S2].
 
@@ -154,7 +154,7 @@ Each row is one implementer assignment with a single owned deliverable. Adjacent
 
 Parallel schedule: T00 (study/reuse the existing secure-store code) is first. Then T01/T02/T03 start together. After their prerequisites, T04/T05/T06/T07 have disjoint ownership and can run alongside one another; T02/T04 share one coordinated donor window, not competing live sessions. T08 follows T07; T09-T11 are sequential integration. T12 is a later evidence phase, not a shortcut around MVP acceptance. T13 and T14 serialize shared unary-adapter ownership. Schema recovery is a hard dependency for codecs, capability calls and send serialization; transport-only byte work can proceed earlier.
 
-For each implementation assignment: run its focused tests once reliably, then integrate with `uv run ruff check .`, `uv run mypy src/chatplus_core`, and `uv run pytest`. Generated protobuf code may have a scoped generated-code configuration, not suppressed application errors. Recheck generated artifacts for drift. Async tests subscribe to local server events before triggering actions, with bounded deadlines; no sleeps or timing-based polling. The complete test suite is offline by default; live acceptance is a separate operator-run procedure, never CI.
+For each implementation assignment: run its focused tests once reliably, then integrate with `uv run ruff check .`, `uv run mypy src/jamal`, and `uv run pytest`. Generated protobuf code may have a scoped generated-code configuration, not suppressed application errors. Recheck generated artifacts for drift. Async tests subscribe to local server events before triggering actions, with bounded deadlines; no sleeps or timing-based polling. The complete test suite is offline by default; live acceptance is a separate operator-run procedure, never CI.
 
 ## 6. Questions for the user / donor operator
 
@@ -173,12 +173,12 @@ These do not block offline foundation work, but their answers gate the specified
 Target protocol claims derive from `RE_FINDINGS.md`; storage corrections derive from [D1] and inspected code [S1-S3]. Tool references support capabilities and generic protobuf behavior, not Oasis-specific conclusions. Accessed 2026-10-15.
 
 - [D1] User's donor-PC update in this task: encrypted auth entries, candidate key labels, 74 secure entries, 23 Hive boxes and `planner.db`. The reported trailing-tag order conflicts with [S1] and requires donor verification.
-- [S1] Existing repository at commit `2e8bf59467147b29f9832ac7c7c8d24b73ac9847`, `chatplus_core/storage.py:81-105,134-161`: key lookup, profile selection and exact GCM layout.
-  `https://github.com/sanguneo/chatplus-core/blob/2e8bf59467147b29f9832ac7c7c8d24b73ac9847/chatplus_core/storage.py`
-- [S2] Same revision, `chatplus_core/hive.py`: CBC/PKCS7 frame decoding and keyed CRC checks.
-  `https://github.com/sanguneo/chatplus-core/blob/2e8bf59467147b29f9832ac7c7c8d24b73ac9847/chatplus_core/hive.py`
-- [S3] Same revision, `chatplus_core/reader.py` and `tests/test_storage.py`: cache-reader boundary and existing storage test style. `values.py` is assigned to T00 for detailed inspection; not inspected during planning.
-  `https://github.com/sanguneo/chatplus-core/blob/2e8bf59467147b29f9832ac7c7c8d24b73ac9847/chatplus_core/reader.py`
+- [S1] Existing repository at commit `2e8bf59467147b29f9832ac7c7c8d24b73ac9847`, `jamal/storage.py:81-105,134-161`: key lookup, profile selection and exact GCM layout.
+  `https://github.com/sanguneo/chatplus-core/blob/2e8bf59467147b29f9832ac7c7c8d24b73ac9847/jamal/storage.py`
+- [S2] Same revision, `jamal/hive.py`: CBC/PKCS7 frame decoding and keyed CRC checks.
+  `https://github.com/sanguneo/chatplus-core/blob/2e8bf59467147b29f9832ac7c7c8d24b73ac9847/jamal/hive.py`
+- [S3] Same revision, `jamal/reader.py` and `tests/test_storage.py`: cache-reader boundary and existing storage test style. `values.py` is assigned to T00 for detailed inspection; not inspected during planning.
+  `https://github.com/sanguneo/chatplus-core/blob/2e8bf59467147b29f9832ac7c7c8d24b73ac9847/jamal/reader.py`
   `https://github.com/sanguneo/chatplus-core/blob/2e8bf59467147b29f9832ac7c7c8d24b73ac9847/tests/test_storage.py`
 
 - [T1] gRPC Python AsyncIO API: async channels and RPC calls.

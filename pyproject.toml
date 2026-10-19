@@ -3,19 +3,23 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "chatplus-core"
+name = "jamal"
 version = "0.1.0"
-description = "Offline foundation for an evidence-driven RCS Oasis client"
+description = "Jamal (جمل) - RCS Oasis protocol bridge for ChattingPlus"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "grpcio>=1.70",
     "protobuf>=6",
     "websockets>=15",
     "httpx>=0.28",
+    "fastapi>=0.115",
+    "uvicorn>=0.34",
+    "python-multipart>=0.0.20",
 ]
 
 [project.scripts]
-chatplus-core = "chatplus_core.cli:main"
+jamal = "jamal.cli:main"
+jamal-adapter = "jamal.serve:main"
 
 [dependency-groups]
 dev = [
@@ -27,7 +31,7 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/chatplus_core"]
+packages = ["src/jamal"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -37,7 +41,7 @@ asyncio_default_fixture_loop_scope = "function"
 [tool.ruff]
 target-version = "py312"
 line-length = 100
-extend-exclude = ["reference", "extracted_msix", "extracted_setup", "src/chatplus_core/_generated"]
+extend-exclude = ["reference", "extracted_msix", "extracted_setup", "src/jamal/_generated"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
@@ -45,4 +49,4 @@ select = ["E", "F", "I", "UP"]
 [tool.mypy]
 python_version = "3.12"
 strict = true
-exclude = ["src/chatplus_core/_generated/"]
+exclude = ["src/jamal/_generated/"]
