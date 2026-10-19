@@ -143,26 +143,49 @@ def test_invalid_field(
     assert CANARY not in "".join(traceback.format_exception(error.value))
 
 
-@pytest.mark.parametrize("key", ["refresh_token", "OASIS_EXP_REFRESH_TOKEN"])
 @pytest.mark.parametrize("location", ["top", "tokens", "nested-list"])
-def test_refresh_rejected(
-    tmp_path: Path, export: dict[str, object], key: str, location: str
+def test_master_refresh_rejected(
+    tmp_path: Path, export: dict[str, object], location: str
 ) -> None:
+    key = "OASIS_EXP_REFRESH_TOKEN"
     if location == "top":
         export[key] = CANARY
     elif location == "tokens":
         cast(dict[str, object], export["tokens"])[key] = CANARY
     else:
         export["extra"] = [{"nested": [{key: None}]}]
-    with pytest.raises(CredentialValidationError, match="short-lived-only"):
+    with pytest.raises(CredentialValidationError, match="OASIS_EXP_REFRESH_TOKEN"):
         _ = load_session(write_export(tmp_path, export))
 
 
-def test_duplicate_keys_cannot_hide_refresh(tmp_path: Path) -> None:
+def test_duplicate_keys_cannot_hide_master_refresh(tmp_path: Path) -> None:
     path = tmp_path / "session.json"
-    _ = path.write_text('{"extra":{"refresh_token":null},"extra":{}}', encoding="utf-8")
-    with pytest.raises(CredentialValidationError, match="short-lived-only"):
+    _ = path.write_text(
+        '{"extra":{"OASIS_EXP_REFRESH_TOKEN":null},"extra":{}}', encoding="utf-8"
+    )
+    with pytest.raises(CredentialValidationError, match="OASIS_EXP_REFRESH_TOKEN"):
         _ = load_session(path)
+
+
+def test_refresh_token_accepted(tmp_path: Path, export: dict[str, object]) -> None:
+    cast(dict[str, object], export["tokens"])["refresh_token"] = "r.e.f"
+    session = load_session(write_export(tmp_path, export))
+    assert session.refresh_token == "r.e.f"
+
+
+def test_device_info_accepted(tmp_path: Path, export: dict[str, object]) -> None:
+    export["device_info"] = {"client_id": "cid", "os_type": "win"}
+    session = load_session(write_export(tmp_path, export))
+    assert session.device_info is not None
+    assert session.device_info["os_type"] == "win"
+
+
+def test_expired_session_loads_when_not_required(
+    tmp_path: Path, export: dict[str, object]
+) -> None:
+    cast(dict[str, object], export["tokens"])["access_token"] = jwt({"exp": NOW - 60})
+    session = load_session(write_export(tmp_path, export), require_valid=False)
+    assert session.is_expired()
 
 
 @pytest.mark.parametrize("exp", [NOW - 60, NOW])

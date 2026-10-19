@@ -17,6 +17,7 @@ import base64
 import ctypes
 import json
 import os
+import platform
 import sys
 import time
 from ctypes import wintypes
@@ -47,6 +48,8 @@ LIMIT_KEYS = (
     "oasis_max_upload_file_size",
 )
 ENVIRONMENTS = ("prd", "stg", "dev")
+DART_VERSION = '3.10.8 (stable) (Tue Jan 27 00:02:04 2026 -0800) on "windows_x64"'
+DEVICE_NAME = "B460 MB B460MDS3H"
 
 
 class _Credential(ctypes.Structure):
@@ -129,6 +132,27 @@ def load_values(package_root: Path, key: bytes) -> dict[str, bytes]:
     return values
 
 
+def firmware_version() -> str:
+    import winreg
+
+    try:
+        with winreg.OpenKey(
+            winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion"
+        ) as handle:
+            value, _ = winreg.QueryValueEx(handle, "DisplayVersion")
+            return str(value)
+    except OSError:
+        return ""
+
+
+def device_id(values: dict[str, bytes], account: str) -> str:
+    prefix = f"cipher_key_{account}_"
+    for name in values:
+        if name.startswith(prefix):
+            return name[len(prefix) :]
+    raise SystemExit("cannot determine device_id from secure storage")
+
+
 def build_session(values: dict[str, bytes], account: str) -> dict[str, object]:
     def text(name: str) -> str:
         raw = values.get(name)
@@ -150,10 +174,26 @@ def build_session(values: dict[str, bytes], account: str) -> dict[str, object]:
         "tokens": {
             "access_token": text("access_token"),
             "grpc_restart_token": text(f"grpc_restart_token_{account}"),
+            "refresh_token": text("refresh_token"),
         },
         "identity": {"client_uuid": text("client_uuid"), "device_code": text("device_code")},
         "roots": {short: text(long) for long, short in ROOT_MAP.items()},
         "limits": {key.removeprefix("oasis_"): int(text(key)) for key in LIMIT_KEYS},
+        "device_info": {
+            "client_id": text("client_uuid"),
+            "device_kind": "computer",
+            "device_id": device_id(values, account),
+            "device_name": DEVICE_NAME,
+            "client_vendor": "SKTelecom",
+            "mno": "SKT",
+            "os_type": "win",
+            "os_version": platform.version(),
+            "device_type": "SD",
+            "firmware_version": firmware_version(),
+            "service_version": "1.0",
+            "client_version": client_version.decode("utf-8") if client_version else "1.5.4.6",
+            "dart_version": DART_VERSION,
+        },
     }
 
 

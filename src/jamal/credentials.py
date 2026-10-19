@@ -49,10 +49,14 @@ class Session:
     roots: Mapping[str, str]
     limits: Mapping[str, int]
     expires_at: float | None
+    refresh_token: str | None = None
+    device_info: Mapping[str, str] | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "roots", MappingProxyType(dict(self.roots)))
         object.__setattr__(self, "limits", MappingProxyType(dict(self.limits)))
+        if self.device_info is not None:
+            object.__setattr__(self, "device_info", MappingProxyType(dict(self.device_info)))
 
     @override
     def __repr__(self) -> str:
@@ -68,9 +72,9 @@ class Session:
 def _session_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
     # The hook sees every object, including objects inside lists, and checks keys
     # before duplicate JSON keys could hide a forbidden value.
-    if any(key in ("refresh_token", "OASIS_EXP_REFRESH_TOKEN") for key, _ in pairs):
+    if any(key == "OASIS_EXP_REFRESH_TOKEN" for key, _ in pairs):
         raise CredentialValidationError(
-            "Refresh-token fields are forbidden; re-export a short-lived-only session"
+            "OASIS_EXP_REFRESH_TOKEN is forbidden; export the standard refresh token only"
         )
     return dict(pairs)
 
@@ -145,7 +149,7 @@ def _expiry_hint(token: str) -> float | None:
         return None
 
 
-def load_session(path: str | Path) -> Session:
+def load_session(path: str | Path, *, require_valid: bool = True) -> Session:
     """Load only the explicit UTF-8 export; never write files or refresh tokens.
 
     CredentialError wraps file-read errors without revealing the path.
@@ -207,6 +211,13 @@ def load_session(path: str | Path) -> Session:
         if type(value) is not int or value < 0:
             raise CredentialValidationError("limits must contain nonnegative integer size limits")
         limits[name] = value
+    raw_refresh = tokens.get("refresh_token")
+    refresh_token = _text(raw_refresh, "tokens.refresh_token") if raw_refresh is not None else None
+    raw_device = data.get("device_info")
+    device_info: dict[str, str] | None = None
+    if raw_device is not None:
+        fields = _object(raw_device, "device_info")
+        device_info = {str(name): _text(fields[name], f"device_info.{name}") for name in fields}
     session = Session(
         format_version=1,
         environment=environment,
@@ -220,7 +231,9 @@ def load_session(path: str | Path) -> Session:
         roots=roots,
         limits=limits,
         expires_at=_expiry_hint(access_token),
+        refresh_token=refresh_token,
+        device_info=device_info,
     )
-    if session.is_expired():
+    if require_valid and session.is_expired():
         raise CredentialValidationError("Access token has expired; re-export the session")
     return session

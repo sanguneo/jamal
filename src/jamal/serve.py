@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import json
 import os
-from collections.abc import Sequence
+import time
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -17,8 +19,9 @@ from jamal.cache import CacheSource
 from jamal.cli import _load_device
 from jamal.client import SubscribeClient
 from jamal.config import load_config_snapshot
-from jamal.credentials import load_session
+from jamal.credentials import Session, load_session
 from jamal.history import History
+from jamal.refresh import HttpPost, apply_refreshed_tokens, renew_tokens
 from jamal.register import Registrar, registration_from_env
 
 
@@ -44,6 +47,35 @@ def validate_cache_url(value: str) -> str:
     return value
 
 
+def _httpx_post(url: str, headers: Mapping[str, str], body: bytes) -> tuple[int, bytes]:
+    response = httpx.post(url, headers=dict(headers), content=body, timeout=30)
+    return response.status_code, response.content
+
+
+def ensure_fresh_session(
+    path: str, client_secret: str, skew_seconds: int = 300, *, post: HttpPost = _httpx_post
+) -> Session:
+    """Load the session, renewing + atomically rewriting it when the token is near expiry."""
+    session = load_session(path, require_valid=False)
+    if not session.is_expired(now=time.time() + skew_seconds):
+        return session
+    if session.refresh_token and session.device_info and client_secret:
+        payload = renew_tokens(
+            environment=session.environment,
+            refresh_token=session.refresh_token,
+            device_info=session.device_info,
+            client_secret=client_secret,
+            post=post,
+        )
+        document = json.loads(Path(path).read_text(encoding="utf-8"))
+        updated = apply_refreshed_tokens(document, payload)
+        updated["exported_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        temp = Path(path + ".tmp")
+        _ = temp.write_text(json.dumps(updated, ensure_ascii=False, indent=2), encoding="utf-8")
+        os.replace(temp, path)
+    return load_session(path)
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Serve the tsuba Oasis adapter")
     parser.add_argument("command", choices=["serve"])
@@ -63,7 +95,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     token = os.environ.get("CHATPLUS_TOKEN", "")
     if len(token.encode()) < 32:
         parser.error("CHATPLUS_TOKEN must contain at least 32 bytes")
-    session = load_session(args.session)
+    client_secret = os.environ.get("CHATPLUS_CLIENT_SECRET", "")
+    session = ensure_fresh_session(args.session, client_secret)
     device = _load_device(args.device)
     if any(not value for value in device.as_metadata().values()):
         parser.error("Device metadata must contain nonempty captured values")
